@@ -16,7 +16,8 @@ add_action('save_post','music_save_postdata');
 wp_deregister_script('jquery'); 
 wp_register_script('jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js', false, '1.3.2'); 
 wp_enqueue_script('jquery');
-wp_enqueue_script('font-awesome',plugins_url('now-playing/font-awesome.min.css',dirname(__FILE__)));
+wp_enqueue_style('font-awesome',plugins_url('now-playing/font-awesome.min.css',dirname(__FILE__)));
+wp_enqueue_style('music-css',plugins_url('now-playing/now-playing.css',dirname(__FILE__)));
 
 function dans_metaboxes() {
 	add_meta_box("music","Now Playing","music_callback","post","side","core");
@@ -68,12 +69,11 @@ function music_display($content) {
 	$artist = get_post_meta($post->ID,"_np_artist",TRUE);
 	$song = get_post_meta($post->ID,"_np_song",TRUE);
 
-	$playing = "Now playing: ";
 	if ($song) $playing .= "\"" . $song . "\"";
 	if ($song && $artist) $playing .= " - ";
 	if ($artist) $playing .= $artist;
 
-	$content = "<p><i class=\"icon-music\"></i> <a href=\"javascript:void(0)\" onclick=\"$('#video').slideDown('fast');\">" . $playing . "</a></p>\r<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/" . $url . "?rel=0\" frameborder=\"0\" allowfullscreen id=\"video\" style=\"display:none\"></iframe>\r" . $content;
+	$content = "<p id=\"nowplaying\"><a href=\"javascript:void(0)\" onclick=\"$('#video').slideDown('fast');\"><i class=\"icon-music icon-large\"></i> " . $playing . " <i class=\"icon-angle-down icon-large\"></i></a></p>\r<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/" . $url . "?rel=0\" frameborder=\"0\" allowfullscreen id=\"video\" style=\"display:none\"></iframe>\r" . $content;
 	return $content;
 }
 
