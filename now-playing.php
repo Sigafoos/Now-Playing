@@ -13,7 +13,7 @@ add_action('add_meta_boxes','dans_metaboxes');
 add_action('save_post','music_save_postdata');
 
 function dans_metaboxes() {
-	add_meta_box("music","Now Playing","music_callback","post","side","high");
+	add_meta_box("music","Now Playing","music_callback","post","side","core");
 }
 
 function music_callback($post, $args) {
