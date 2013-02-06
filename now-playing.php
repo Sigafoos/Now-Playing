@@ -9,8 +9,14 @@ Author URI: http://www.danconley.net
 License: Kopyleft
 */
 
+// 1. The edit post form
 add_action('add_meta_boxes','dans_metaboxes');
 add_action('save_post','music_save_postdata');
+// screw you, I want the most recent jQuery
+wp_deregister_script('jquery'); 
+wp_register_script('jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js', false, '1.3.2'); 
+wp_enqueue_script('jquery');
+wp_enqueue_script('font-awesome',plugins_url('now-playing/font-awesome.min.css',dirname(__FILE__)));
 
 function dans_metaboxes() {
 	add_meta_box("music","Now Playing","music_callback","post","side","core");
@@ -45,6 +51,30 @@ function music_save_postdata($id) {
 	if (!add_post_meta($id,'_np_artist',sanitize_text_field($_POST['np_artist']),TRUE)) update_post_meta($id,'_np_artist',sanitize_text_field($_POST['np_artist']));
 	if (!add_post_meta($id,'_np_song',sanitize_text_field($_POST['np_song']),TRUE)) update_post_meta($id,'_np_song',sanitize_text_field($_POST['np_song']));
 	if (!add_post_meta($id,'_np_url',sanitize_text_field($_POST['np_url']),TRUE)) update_post_meta($id,'_np_url',sanitize_text_field($_POST['np_url']));
+}
+
+// 2. The display on posts
+add_filter('the_content','music_display');
+
+function music_display($content) {
+	global $post;
+	// if it's not a post, and the post doesn't at least have a youtube url, don't bother
+	if ($post->post_type != "post") return $content;
+	$url = get_post_meta($post->ID,"_np_url",TRUE);
+	if (!$url) return $content;
+
+	preg_match("/v=([^&]+)/",$url,$match);
+	$url = $match[1];
+	$artist = get_post_meta($post->ID,"_np_artist",TRUE);
+	$song = get_post_meta($post->ID,"_np_song",TRUE);
+
+	$playing = "Now playing: ";
+	if ($song) $playing .= "\"" . $song . "\"";
+	if ($song && $artist) $playing .= " - ";
+	if ($artist) $playing .= $artist;
+
+	$content = "<p><i class=\"icon-music\"></i> <a href=\"javascript:void(0)\" onclick=\"$('#video').slideDown('fast');\">" . $playing . "</a></p>\r<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/" . $url . "?rel=0\" frameborder=\"0\" allowfullscreen id=\"video\" style=\"display:none\"></iframe>\r" . $content;
+	return $content;
 }
 
 ?>
