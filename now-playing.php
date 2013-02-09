@@ -74,7 +74,7 @@ function music_display($content) {
 	if ($song && $artist) $playing .= " - ";
 	if ($artist) $playing .= $artist;
 
-	$content = "<p id=\"nowplaying\"><a href=\"javascript:void(0)\"><i class=\"icon-music icon-large\"></i> " . $playing . " <i class=\"icon-angle-down icon-large\"></i></a></p>\r<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/" . $url . "?rel=0\" frameborder=\"0\" allowfullscreen id=\"video\" style=\"display:none\"></iframe>\r" . $content;
+	$content = "<p id=\"nowplaying\"><a href=\"javascript:void(0)\"><i class=\"icon-music icon-large\"></i> " . $playing . " <span id=\"arrow\"><i class=\"icon-angle-down icon-large\"></i></span></a></p>\r<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/" . $url . "?rel=0\" frameborder=\"0\" allowfullscreen id=\"video\" style=\"display:none\"></iframe>\r" . $content;
 	return $content;
 }
 
