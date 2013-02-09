@@ -2,7 +2,7 @@
 /*
 Plugin Name: Now Playing Widget
 Plugin URI: 
-Description: Displays an optional musical link (to Youtube) at the bottom of a post
+Description: Displays an optional musical link (to Youtube) at the top of a post
 Version: 0.5.2.3
 Author: Dan Conley
 Author URI: http://www.danconley.net
@@ -50,9 +50,9 @@ function music_save_postdata($id) {
 	}
 
 	// okay? okay.
-	if (!add_post_meta($id,'_np_artist',sanitize_text_field($_POST['np_artist']),TRUE)) update_post_meta($id,'_np_artist',sanitize_text_field($_POST['np_artist']));
-	if (!add_post_meta($id,'_np_song',sanitize_text_field($_POST['np_song']),TRUE)) update_post_meta($id,'_np_song',sanitize_text_field($_POST['np_song']));
-	if (!add_post_meta($id,'_np_url',sanitize_text_field($_POST['np_url']),TRUE)) update_post_meta($id,'_np_url',sanitize_text_field($_POST['np_url']));
+	if (!update_post_meta($id,'_np_artist',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_artist']),TRUE))) add_post_meta($id,'_np_artist',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_artist'])));
+	if (!update_post_meta($id,'_np_song',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_song']),TRUE))) add_post_meta($id,'_np_song',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_song'])));
+	if (!update_post_meta($id,'_np_url',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_url']),TRUE))) add_post_meta($id,'_np_url',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_url'])));
 }
 
 // 2. The display on posts
