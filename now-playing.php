@@ -12,11 +12,7 @@ License: Kopyleft
 // 1. The edit post form
 add_action('add_meta_boxes','dans_metaboxes');
 add_action('save_post','music_save_postdata');
-// screw you, I want the most recent jQuery
-wp_deregister_script('jquery'); 
-wp_register_script('jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js', false, '1.3.2'); 
-wp_enqueue_script('jquery');
-wp_enqueue_script('music-js',plugins_url('now-playing/now-playing.js',dirname(__FILE__)),'jquery');
+wp_enqueue_script('music-js',plugins_url('now-playing/now-playing.js',dirname(__FILE__)),array('jquery'));
 wp_enqueue_style('font-awesome',plugins_url('now-playing/font-awesome.min.css',dirname(__FILE__)));
 wp_enqueue_style('music',plugins_url('now-playing/now-playing.css',dirname(__FILE__)));
 

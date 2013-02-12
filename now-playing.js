@@ -1,4 +1,4 @@
-$(document).ready(function(){
+jQuery(document).ready(function($){
 		$('#nowplaying a').click(function(){
 			if (!$('#video').is(':visible')) {
 			$('#video').slideDown('fast');
