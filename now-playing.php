@@ -1,8 +1,8 @@
 <?php
 /*
 Plugin Name: Now Playing Widget
-Plugin URI: 
-Description: Displays an optional musical link (to Youtube) at the top of a post
+Plugin URI: https://github.com/Sigafoos/now-playing
+Description: Displays an optional musical embed at the top of a post
 Version: 0.5.2.3
 Author: Dan Conley
 Author URI: http://www.danconley.net
@@ -30,7 +30,7 @@ function music_callback($post, $args) {
 	echo "<input type=\"text\" id=\"np_artist\" name=\"np_artist\" value=\"" . $artist . "\" size=\"35\" />\n";
 	echo "<label for=\"np_song\">Song</label>\n";
 	echo "<input type=\"text\" id=\"np_song\" name=\"np_song\" value=\"" . $song . "\" size=\"35\" />\n";
-	echo "<label for=\"np_url\">Youtube</label>\n";
+	echo "<label for=\"np_url\">URL (not embed code)</label>\n";
 	echo "<input type=\"text\" id=\"np_url\" name=\"np_url\" value=\"" . $url . "\" size=\"35\" />\n";
 }
 
