@@ -61,8 +61,17 @@ function music_display($content) {
 	$url = get_post_meta($post->ID,"_np_url",TRUE);
 	if (!$url) return $content;
 
-	preg_match("/v=([^&]+)/",$url,$match);
-	$url = $match[1];
+	// yeah, I use Synacor syntax now. shit's mixed.
+	if (strpos($url, 'youtube') !== FALSE)
+	{
+		preg_match("/v=([^&]+)/",$url,$match);
+		$embed = "<iframe src=\"https://www.youtube.com/embed/" . $match[1] . "?rel=0\" frameborder=\"0\" allowfullscreen id=\"video\" style=\"display:none\"></iframe>";
+	}
+	else if (strpos($url, 'vimeo') !== FALSE)
+	{
+		preg_match('/([0-9]+)\/?$/', $url, $match);
+		$embed = '<iframe src="//player.vimeo.com/video/' . $match[1] . '" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen id="video" style="display:none"></iframe>';
+	}
 	$artist = get_post_meta($post->ID,"_np_artist",TRUE);
 	$song = get_post_meta($post->ID,"_np_song",TRUE);
 
@@ -70,7 +79,7 @@ function music_display($content) {
 	if ($song && $artist) $playing .= " - ";
 	if ($artist) $playing .= $artist;
 
-	$content = "<p id=\"nowplaying\"><a href=\"javascript:void(0)\"><i class=\"icon-music icon-large\"></i> " . $playing . " (<span id=\"arrow\">listen <i class=\"icon-angle-down icon-large\"></i></span>)</a></p>\r<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/" . $url . "?rel=0\" frameborder=\"0\" allowfullscreen id=\"video\" style=\"display:none\"></iframe>\r" . $content;
+	$content = "<p id=\"nowplaying\"><a href=\"javascript:void(0)\"><i class=\"icon-music icon-large\"></i> " . $playing . " (<span id=\"arrow\">listen <i class=\"icon-angle-down icon-large\"></i></span>)</a></p>\r" . $embed . "\r" . $content;
 	return $content;
 }
 
