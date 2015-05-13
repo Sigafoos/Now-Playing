@@ -21,9 +21,9 @@ function dans_metaboxes() {
 }
 
 function music_callback($post, $args) {
-	$artist = get_post_meta($post->ID,'_np_artist',TRUE);
-	$song = get_post_meta($post->ID,'_np_song',TRUE);
-	$url = get_post_meta($post->ID,'_np_url',TRUE);
+	$artist = get_post_meta($post->ID,'_np_artist',true);
+	$song = get_post_meta($post->ID,'_np_song',true);
+	$url = get_post_meta($post->ID,'_np_url',true);
 
 	wp_nonce_field( plugin_basename( __FILE__ ), 'music_nonce' );
 	echo "<label for=\"np_artist\">Artist</label>\n";
@@ -46,9 +46,9 @@ function music_save_postdata($id) {
 	}
 
 	// okay? okay.
-	if (!update_post_meta($id,'_np_artist',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_artist']),TRUE))) add_post_meta($id,'_np_artist',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_artist'])));
-	if (!update_post_meta($id,'_np_song',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_song']),TRUE))) add_post_meta($id,'_np_song',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_song'])));
-	if (!update_post_meta($id,'_np_url',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_url']),TRUE))) add_post_meta($id,'_np_url',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_url'])));
+	if (!update_post_meta($id,'_np_artist',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_artist']),true))) add_post_meta($id,'_np_artist',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_artist'])));
+	if (!update_post_meta($id,'_np_song',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_song']),true))) add_post_meta($id,'_np_song',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_song'])));
+	if (!update_post_meta($id,'_np_url',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_url']),true))) add_post_meta($id,'_np_url',preg_replace("/&/","&amp;",sanitize_text_field($_POST['np_url'])));
 }
 
 // 2. The display on posts
@@ -56,30 +56,50 @@ add_filter('the_content','music_display');
 
 function music_display($content) {
 	global $post;
+	$toggle = true;
+
 	// if it's not a post, and the post doesn't at least have a youtube url, don't bother
 	if ($post->post_type != "post") return $content;
-	$url = get_post_meta($post->ID,"_np_url",TRUE);
+	$url = get_post_meta($post->ID,"_np_url",true);
 	if (!$url) return $content;
 
 	// yeah, I use Synacor syntax now. shit's mixed.
-	if (strpos($url, 'youtube') !== FALSE)
+	if (strpos($url, 'youtube') !== false)
 	{
 		preg_match("/v=([^&]+)/",$url,$match);
 		$embed = "<iframe src=\"https://www.youtube.com/embed/" . $match[1] . "?rel=0\" frameborder=\"0\" allowfullscreen id=\"video\" style=\"display:none\"></iframe>";
 	}
-	else if (strpos($url, 'vimeo') !== FALSE)
+	else if (strpos($url, 'vimeo') !== false)
 	{
 		preg_match('/([0-9]+)\/?$/', $url, $match);
 		$embed = '<iframe src="//player.vimeo.com/video/' . $match[1] . '" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen id="video" style="display:none"></iframe>';
 	}
-	$artist = get_post_meta($post->ID,"_np_artist",TRUE);
-	$song = get_post_meta($post->ID,"_np_song",TRUE);
+	else if (strpos($url, 'soundcloud') != false)
+	{
+		require('soundcloud_id.inc.php');
+		$ch = curl_init('http://api.soundcloud.com/resolve.json?url=' . $url . '&client_id=' . $client_id);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$result = json_decode(curl_exec($ch));
+		preg_match('/\/([0-9]+)\.json/', $result->location, $matches);
+		$embed = '<iframe width="100%" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/' . $matches[1] . '&amp;auto_play=false&amp;hide_related=true&amp;show_comments=false&amp;show_user=true&amp;show_reposts=false&amp;visual=true"></iframe>';
+		$toggle = false;
+	}
 
+	$artist = get_post_meta($post->ID,"_np_artist",true);
+	$song = get_post_meta($post->ID,"_np_song",true);
 	if ($song) $playing .= "\"" . $song . "\"";
 	if ($song && $artist) $playing .= " - ";
 	if ($artist) $playing .= $artist;
 
-	$content = "<p id=\"nowplaying\"><a href=\"javascript:void(0)\"><i class=\"icon-music icon-large\"></i> " . $playing . " (<span id=\"arrow\">listen <i class=\"icon-angle-down icon-large\"></i></span>)</a></p>\r" . $embed . "\r" . $content;
+	if ($toggle)
+	{
+		$content = "<p id=\"nowplaying\"><a href=\"javascript:void(0)\"><i class=\"icon-music icon-large\"></i> " . $playing . " (<span id=\"arrow\">listen <i class=\"icon-angle-down icon-large\"></i></span>)</a></p>\r" . $embed . "\r" . $content;
+	}
+	else
+	{
+		$content = $embed . "\r" . $content;
+	}
+
 	return $content;
 }
 
